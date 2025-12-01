@@ -1,0 +1,139 @@
+project_id = "fczgowziugcvrpgfelks"
+
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+[functions.whatsapp-webhook-v2]
+verify_jwt = false
+
+[functions.process-message-queue-v2]
+verify_jwt = false
+
+[functions.whatsapp-meta-callback]
+verify_jwt = false
+
+[functions.whatsapp-meta-webhook]
+verify_jwt = false
+
+[functions.whatsapp-meta-webhook-v2]
+verify_jwt = false
+
+[functions.send-whatsapp-meta-message]
+verify_jwt = false
+
+[functions.send-whatsapp-message]
+verify_jwt = false
+
+[functions.send-whatsapp-media]
+verify_jwt = false
+
+[functions.send-ai-agent-webhook]
+verify_jwt = false
+
+[functions.analyze-conversation-for-order]
+verify_jwt = false
+
+[functions.inventory-api]
+verify_jwt = false
+
+[functions.get-chat-context]
+verify_jwt = false
+
+[functions.validate-shopify-credentials]
+verify_jwt = true
+
+[functions.shopify-import-orders]
+verify_jwt = true
+
+[functions.shopify-import-products]  
+verify_jwt = true
+
+[functions.shopify-setup-webhook]
+verify_jwt = true
+
+[functions.shopify-webhook-orders]
+verify_jwt = false
+
+[functions.shopify-webhook-products]
+verify_jwt = false
+
+[functions.sync-agent-inventory]
+verify_jwt = true
+
+[functions.generate-product-embeddings]
+verify_jwt = true
+
+[functions.search-products-vector]
+verify_jwt = true
+
+[functions.generate-single-product-embedding]
+verify_jwt = false
+
+[functions.create-order-from-agent]
+verify_jwt = false
+
+[functions.get-customer-order-history]
+verify_jwt = false
+
+[functions.auto-reactivate-agents]
+verify_jwt = false
+
+[functions.assign-order-tag]
+verify_jwt = false
+
+[functions.send-admin-notification]
+verify_jwt = false
+
+[functions.generate-product-image-embeddings]
+verify_jwt = true
+
+[functions.search-products-by-image]
+verify_jwt = false
+
+[functions.upload-product-images]
+verify_jwt = true
+
+[functions.handle-product-image-update]
+verify_jwt = true
+
+[functions.increment-ai-usage]
+verify_jwt = false
+
+[functions.charge-extra-messages]
+verify_jwt = false
+
+[functions.process-grouped-messages]
+verify_jwt = false
+
+[functions.check-usage-limits]
+verify_jwt = true
+
+[functions.admin-update-user-plan]
+verify_jwt = true
+
+[functions.sync-stripe-subscriptions]
+verify_jwt = true
+
+[functions.generate-demo-slots]
+verify_jwt = false
+
+[functions.fix-demo-slots-timezone]
+verify_jwt = true
+
+[functions.send-demo-booking-webhook]
+verify_jwt = false
+
+[functions.execute-flow]
+verify_jwt = false
+
+[functions.ai-analyze-conversation]
+verify_jwt = false
+
+[functions.check-flow-triggers]
+verify_jwt = false
+
+[functions.shopify-oauth-begin]
+verify_jwt = false
+
+[functions.shopify-oauth-callback]
+verify_jwt = false
