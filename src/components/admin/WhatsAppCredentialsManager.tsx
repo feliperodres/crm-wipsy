@@ -38,20 +38,20 @@ export const WhatsAppCredentialsManager = () => {
     queryFn: async () => {
       // Obtener todos los usuarios del admin RPC
       const { data: adminUsers, error: adminError } = await supabase.rpc('get_admin_user_details');
-      
+
       if (adminError) throw adminError;
 
       // Obtener credenciales existentes
       const { data: credentials, error: credError } = await supabase
         .from('whatsapp_evolution_credentials')
         .select('user_id, api_url, instance_name, status');
-      
+
       if (credError) throw credError;
 
       // Combinar datos
       return adminUsers?.map((user: any) => {
         const userCreds = credentials?.find(c => c.user_id === user.user_id);
-        
+
         return {
           user_id: user.user_id,
           email: user.email || 'N/A',
@@ -120,7 +120,7 @@ export const WhatsAppCredentialsManager = () => {
     onError: (error: any) => {
       console.error('Save mutation error:', error);
       let errorMessage = "Error al guardar credenciales";
-      
+
       if (error.message) {
         // Mensajes de error más amigables
         if (error.message.includes('not found')) {
@@ -133,7 +133,7 @@ export const WhatsAppCredentialsManager = () => {
           errorMessage = error.message;
         }
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -143,7 +143,7 @@ export const WhatsAppCredentialsManager = () => {
   });
 
   const getWebhookUrl = (userEmail: string) => {
-    const baseUrl = 'https://fczgowziugcvrpgfelks.supabase.co/functions/v1';
+    const baseUrl = import.meta.env.VITE_SUPABASE_URL;
     const userHash = btoa(userEmail).replace(/[+/=]/g, '').substring(0, 16);
     return `${baseUrl}/whatsapp-webhook?user=${userHash}`;
   };

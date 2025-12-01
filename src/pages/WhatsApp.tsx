@@ -54,11 +54,11 @@ const WhatsApp = () => {
     if (user?.email) {
       const base = btoa(user.email);
       const hash = base.replace(/[+/=]/g, '').substring(0, 16);
-      setWebhookUrl(`https://fczgowziugcvrpgfelks.supabase.co/functions/v1/whatsapp-webhook?user=${hash}`);
-      setMetaWebhookUrl(`https://fczgowziugcvrpgfelks.supabase.co/functions/v1/whatsapp-meta-webhook`);
+      setWebhookUrl(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-webhook?user=${hash}`);
+      setMetaWebhookUrl(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-meta-webhook`);
       loadInstances();
     }
-    
+
     // Detectar si se completó exitosamente el registro
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
@@ -84,7 +84,7 @@ const WhatsApp = () => {
   const loadInstances = async () => {
     try {
       console.log('Loading WhatsApp instances...');
-      
+
       // Cargar instancias externas
       const { data: externalData, error: externalError } = await supabase
         .from('whatsapp_evolution_credentials')
@@ -112,7 +112,7 @@ const WhatsApp = () => {
 
       setInstances(externalData || []);
       setMetaCredentials(metaData || []);
-      
+
     } catch (error) {
       console.error('Error loading instances:', error);
       toast({
@@ -150,7 +150,7 @@ const WhatsApp = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Estás seguro de eliminar esta instancia?")) return;
-    
+
     try {
       const { error } = await supabase
         .from('whatsapp_evolution_credentials')
@@ -220,7 +220,7 @@ const WhatsApp = () => {
 
   const handleDeleteMeta = async (id: string) => {
     if (!confirm("¿Estás seguro de desconectar esta cuenta de WhatsApp?")) return;
-    
+
     try {
       const { error } = await supabase
         .from('whatsapp_meta_credentials')
@@ -255,8 +255,8 @@ const WhatsApp = () => {
 
     const appId = import.meta.env.VITE_META_APP_ID;
     const configId = import.meta.env.VITE_META_CONFIG_ID;
-    const redirectUri = `https://fczgowziugcvrpgfelks.supabase.co/functions/v1/whatsapp-meta-callback`;
-    
+    const redirectUri = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-meta-callback`;
+
     if (!appId || !configId) {
       toast({
         title: "Error de configuración",
@@ -267,14 +267,14 @@ const WhatsApp = () => {
     }
 
     const state = user.id;
-    
+
     // Parámetros extras para activar el onboarding de WhatsApp Business
     const extras = {
       featureType: "whatsapp_business_app_onboarding",
       sessionInfoVersion: "3",
       version: "v3"
     };
-    
+
     const fbLoginUrl = `https://www.facebook.com/v18.0/dialog/oauth?` +
       `client_id=${appId}&` +
       `redirect_uri=${encodeURIComponent(redirectUri)}&` +
@@ -283,15 +283,15 @@ const WhatsApp = () => {
       `response_type=code&` +
       `scope=whatsapp_business_management,whatsapp_business_messaging&` +
       `extras=${encodeURIComponent(JSON.stringify(extras))}`;
-    
+
     console.log('Opening Meta signup popup:', fbLoginUrl);
-    
+
     const popup = window.open(
       fbLoginUrl,
       'meta-whatsapp-signup',
       'width=600,height=700,scrollbars=yes'
     );
-    
+
     if (!popup) {
       toast({
         title: "Error",
@@ -300,23 +300,23 @@ const WhatsApp = () => {
       });
       return;
     }
-    
+
     const checkPopup = setInterval(() => {
       if (popup?.closed) {
         clearInterval(checkPopup);
         loadInstances();
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const success = urlParams.get('success');
         const error = urlParams.get('error');
         const phone = urlParams.get('phone');
-        
+
         if (success === 'true') {
           toast({
             title: "¡Conexión exitosa!",
             description: phone ? `WhatsApp ${phone} conectado correctamente` : "WhatsApp conectado correctamente",
           });
-          
+
           window.history.replaceState({}, '', '/whatsapp');
         } else if (error) {
           toast({
@@ -324,7 +324,7 @@ const WhatsApp = () => {
             description: decodeURIComponent(error),
             variant: "destructive",
           });
-          
+
           window.history.replaceState({}, '', '/whatsapp');
         }
       }
@@ -425,7 +425,7 @@ const WhatsApp = () => {
         title: "Éxito",
         description: editingInstance ? "Instancia actualizada exitosamente" : "Instancia creada exitosamente",
       });
-      
+
       handleCancelForm();
       loadInstances();
     } catch (error: any) {
@@ -455,7 +455,7 @@ const WhatsApp = () => {
 
             <div className="grid md:grid-cols-2 gap-6">
               {/* Opción WhatsApp Oficial */}
-              <Card 
+              <Card
                 className="p-6 hover:border-primary transition-colors cursor-pointer"
                 onClick={() => setSelectedOption('official')}
               >
@@ -479,7 +479,7 @@ const WhatsApp = () => {
               </Card>
 
               {/* Opción Conexión Externa */}
-              <Card 
+              <Card
                 className="p-6 hover:border-primary transition-colors cursor-pointer"
                 onClick={() => setSelectedOption('external')}
               >
@@ -514,8 +514,8 @@ const WhatsApp = () => {
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Botón para volver a las opciones */}
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="gap-2"
             onClick={() => {
               setSelectedOption(null);
@@ -537,9 +537,9 @@ const WhatsApp = () => {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => navigate('/templates')} 
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/templates')}
                     className="gap-2"
                   >
                     <FileText className="h-4 w-4" />
@@ -598,7 +598,7 @@ const WhatsApp = () => {
                         </div>
                       </div>
                     ))}
-                    
+
                     {/* Información del Webhook de Meta */}
                     <div className="mt-4 p-4 bg-blue-50/50 dark:bg-blue-950/20 rounded-lg space-y-3">
                       <div className="flex items-start gap-2">
@@ -671,178 +671,231 @@ const WhatsApp = () => {
                 )}
               </div>
 
-          {/* Lista de instancias externas */}
-          {!showForm && instances.length > 0 && selectedOption === 'external' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Instancias Configuradas</CardTitle>
-                <CardDescription>
-                  Todas tus instancias comparten el mismo webhook
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {instances.map((instance) => (
-                    <div
-                      key={instance.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">
-                            {instance.display_name || instance.instance_name}
-                          </h3>
-                          {instance.is_default && (
-                            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                              Predeterminada
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Instancia: {instance.instance_name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {instance.api_url}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(instance)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(instance.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Formulario para crear/editar instancia */}
-          {showForm && selectedOption === 'external' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCancelForm}
-                  className="gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Volver
-                </Button>
-                <div>
-                  <h2 className="text-xl font-bold">
-                    {editingInstance ? "Editar Instancia" : "Nueva Instancia"}
-                  </h2>
-                </div>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
+              {/* Lista de instancias externas */}
+              {!showForm && instances.length > 0 && selectedOption === 'external' && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Settings className="h-5 w-5" />
-                      Credenciales de Conexión
-                    </CardTitle>
+                    <CardTitle>Instancias Configuradas</CardTitle>
                     <CardDescription>
-                      Configura tu API externa
+                      Todas tus instancias comparten el mismo webhook
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="apiUrl">URL de API</Label>
-                      <Input
-                        id="apiUrl"
-                        type="url"
-                        placeholder="https://tu-api.com"
-                        value={apiUrl}
-                        onChange={(e) => setApiUrl(e.target.value)}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        URL base de tu API externa
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="apiKey">API Key</Label>
-                      <Input
-                        id="apiKey"
-                        type="password"
-                        placeholder="Tu API Key"
-                        value={apiKey}
-                        onChange={(e) => setApiKey(e.target.value)}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Clave de autenticación de tu API
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="instanceName">Nombre de Instancia *</Label>
-                      <Input
-                        id="instanceName"
-                        placeholder="mi-instancia"
-                        value={instanceName}
-                        onChange={(e) => setInstanceName(e.target.value)}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Identificador único de la instancia en tu API
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="displayName">Nombre para Mostrar (Opcional)</Label>
-                      <Input
-                        id="displayName"
-                        placeholder="Ej: WhatsApp Principal"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Nombre descriptivo para identificar esta instancia
-                      </p>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={validateCredentials}
-                        disabled={validating || !apiUrl || !apiKey || !instanceName}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        {validating ? "Validando..." : "Probar Conexión"}
-                      </Button>
-
-                      <Button
-                        onClick={handleSaveCredentials}
-                        disabled={loading || !apiUrl || !apiKey || !instanceName}
-                        className="flex-1"
-                      >
-                        {loading ? "Guardando..." : editingInstance ? "Actualizar" : "Guardar"}
-                      </Button>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {instances.map((instance) => (
+                        <div
+                          key={instance.id}
+                          className="flex items-center justify-between p-4 border rounded-lg"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">
+                                {instance.display_name || instance.instance_name}
+                              </h3>
+                              {instance.is_default && (
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                                  Predeterminada
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              Instancia: {instance.instance_name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {instance.api_url}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(instance)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(instance.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
+              )}
 
+              {/* Formulario para crear/editar instancia */}
+              {showForm && selectedOption === 'external' && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCancelForm}
+                      className="gap-2"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Volver
+                    </Button>
+                    <div>
+                      <h2 className="text-xl font-bold">
+                        {editingInstance ? "Editar Instancia" : "Nueva Instancia"}
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Settings className="h-5 w-5" />
+                          Credenciales de Conexión
+                        </CardTitle>
+                        <CardDescription>
+                          Configura tu API externa
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="apiUrl">URL de API</Label>
+                          <Input
+                            id="apiUrl"
+                            type="url"
+                            placeholder="https://tu-api.com"
+                            value={apiUrl}
+                            onChange={(e) => setApiUrl(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            URL base de tu API externa
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="apiKey">API Key</Label>
+                          <Input
+                            id="apiKey"
+                            type="password"
+                            placeholder="Tu API Key"
+                            value={apiKey}
+                            onChange={(e) => setApiKey(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Clave de autenticación de tu API
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="instanceName">Nombre de Instancia *</Label>
+                          <Input
+                            id="instanceName"
+                            placeholder="mi-instancia"
+                            value={instanceName}
+                            onChange={(e) => setInstanceName(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Identificador único de la instancia en tu API
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="displayName">Nombre para Mostrar (Opcional)</Label>
+                          <Input
+                            id="displayName"
+                            placeholder="Ej: WhatsApp Principal"
+                            value={displayName}
+                            onChange={(e) => setDisplayName(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Nombre descriptivo para identificar esta instancia
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={validateCredentials}
+                            disabled={validating || !apiUrl || !apiKey || !instanceName}
+                            variant="outline"
+                            className="flex-1"
+                          >
+                            {validating ? "Validando..." : "Probar Conexión"}
+                          </Button>
+
+                          <Button
+                            onClick={handleSaveCredentials}
+                            disabled={loading || !apiUrl || !apiKey || !instanceName}
+                            className="flex-1"
+                          >
+                            {loading ? "Guardando..." : editingInstance ? "Actualizar" : "Guardar"}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Webhook className="h-5 w-5" />
+                          Webhook URL
+                        </CardTitle>
+                        <CardDescription>
+                          Configura este webhook en tu API
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>Tu Webhook URL</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              value={webhookUrl}
+                              readOnly
+                              className="font-mono text-xs bg-muted"
+                            />
+                            <Button
+                              onClick={copyWebhookUrl}
+                              variant="outline"
+                              size="icon"
+                            >
+                              {copied ? (
+                                <Check className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <Copy className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Todas las instancias usan el mismo webhook
+                          </p>
+                        </div>
+
+                        <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md space-y-2">
+                          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            Eventos a configurar:
+                          </p>
+                          <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1 ml-4 list-disc">
+                            <li>messages.upsert</li>
+                            <li>messages.update</li>
+                            <li>send.message</li>
+                          </ul>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
+
+              {!showForm && selectedOption === 'external' && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Webhook className="h-5 w-5" />
-                      Webhook URL
+                      Webhook Compartido
                     </CardTitle>
                     <CardDescription>
-                      Configura este webhook en tu API
+                      Todas tus instancias usan el mismo webhook
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -866,63 +919,10 @@ const WhatsApp = () => {
                           )}
                         </Button>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Todas las instancias usan el mismo webhook
-                      </p>
-                    </div>
-
-                    <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md space-y-2">
-                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                        Eventos a configurar:
-                      </p>
-                      <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1 ml-4 list-disc">
-                        <li>messages.upsert</li>
-                        <li>messages.update</li>
-                        <li>send.message</li>
-                      </ul>
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            </div>
-          )}
-
-          {!showForm && selectedOption === 'external' && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Webhook className="h-5 w-5" />
-                  Webhook Compartido
-                </CardTitle>
-                <CardDescription>
-                  Todas tus instancias usan el mismo webhook
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Tu Webhook URL</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={webhookUrl}
-                      readOnly
-                      className="font-mono text-xs bg-muted"
-                    />
-                    <Button
-                      onClick={copyWebhookUrl}
-                      variant="outline"
-                      size="icon"
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+              )}
             </>
           )}
         </div>

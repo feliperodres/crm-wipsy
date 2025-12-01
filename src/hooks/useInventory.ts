@@ -65,7 +65,7 @@ export interface InventoryResponse {
 export async function getInventory(userId: string): Promise<InventoryResponse> {
   try {
     // Construir la URL con parámetros
-    const url = new URL(`https://fczgowziugcvrpgfelks.supabase.co/functions/v1/inventory-api`);
+    const url = new URL(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inventory-api`);
     url.searchParams.append('userId', userId);
 
     console.log('Fetching inventory from:', url.toString());
@@ -84,7 +84,7 @@ export async function getInventory(userId: string): Promise<InventoryResponse> {
     }
 
     const data: InventoryResponse = await response.json();
-    
+
     console.log('Inventory loaded successfully:', data.summary);
     return data;
 
@@ -102,7 +102,7 @@ export async function getInventory(userId: string): Promise<InventoryResponse> {
 export async function getInventoryByHash(userHash: string): Promise<InventoryResponse> {
   try {
     // Construir la URL con parámetros
-    const url = new URL(`https://fczgowziugcvrpgfelks.supabase.co/functions/v1/inventory-api`);
+    const url = new URL(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inventory-api`);
     url.searchParams.append('userHash', userHash);
 
     console.log('Fetching inventory from:', url.toString());
@@ -121,7 +121,7 @@ export async function getInventoryByHash(userHash: string): Promise<InventoryRes
     }
 
     const data: InventoryResponse = await response.json();
-    
+
     console.log('Inventory loaded successfully:', data.summary);
     return data;
 
@@ -164,10 +164,10 @@ export function useInventory(userId: string) {
       setError('userId es requerido');
       return;
     }
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const data = await getInventory(userId);
       setInventory(data);

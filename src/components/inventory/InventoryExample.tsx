@@ -8,7 +8,7 @@ import { Package, AlertTriangle, TrendingUp } from 'lucide-react';
 export function InventoryExample() {
   // Usuario de ejemplo - reemplaza con el userId real
   const userId = "e271fcc4-1822-4da8-8439-0b67e828a17f"; // Tu userId del contexto
-  
+
   // Ejemplo 1: Usando el hook personalizado
   const { inventory, loading, error, fetchInventory } = useInventory(userId);
 
@@ -31,12 +31,12 @@ export function InventoryExample() {
     try {
       const data = await getInventory(userId); // Con userId específico
       console.log('Mi inventario:', data);
-      
+
       // Ejemplo de cómo usar los datos
       console.log('Total de productos:', data.summary.totalProducts);
       console.log('Stock total:', data.summary.totalStock);
       console.log('Productos con stock bajo:', data.summary.lowStockProducts);
-      
+
       // Iterar productos
       data.products.forEach(product => {
         console.log(`Producto: ${product.name}`);
@@ -45,7 +45,7 @@ export function InventoryExample() {
         console.log(`Variantes: ${product.variants.length}`);
         console.log('---');
       });
-      
+
     } catch (error) {
       console.error('Error:', error);
     }
@@ -139,8 +139,8 @@ export function InventoryExample() {
                 <CardHeader>
                   {product.coverImage && (
                     <div className="w-full h-32 bg-muted rounded-md mb-3 overflow-hidden">
-                      <img 
-                        src={product.coverImage} 
+                      <img
+                        src={product.coverImage}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
@@ -148,20 +148,20 @@ export function InventoryExample() {
                   )}
                   <CardTitle className="text-lg">{product.name}</CardTitle>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Precio:</span>
                     <span className="font-semibold">${product.basePrice.toLocaleString()}</span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Stock:</span>
                     <Badge variant={product.totalStock > 5 ? "default" : "destructive"}>
                       {product.totalStock} unidades
                     </Badge>
                   </div>
-                  
+
                   {product.category && (
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Categoría:</span>
@@ -196,14 +196,14 @@ export function InventoryExample() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">
-            <p><strong>Endpoint:</strong> https://fczgowziugcvrpgfelks.supabase.co/functions/v1/inventory-api</p>
+            <p><strong>Endpoint:</strong> {import.meta.env.VITE_SUPABASE_URL}/functions/v1/inventory-api</p>
             <p><strong>Método:</strong> GET</p>
             <p><strong>Autenticación:</strong> No requerida</p>
             <p><strong>Parámetros requeridos:</strong> ?userId=TU_USER_ID o ?userHash=TU_USER_HASH</p>
             <p><strong>Usuario actual:</strong> {inventory?.userId || 'No cargado'}</p>
             <p><strong>Ejemplo CURL:</strong></p>
             <code className="block bg-muted p-2 rounded text-xs">
-              curl "https://fczgowziugcvrpgfelks.supabase.co/functions/v1/inventory-api?userId=e271fcc4-1822-4da8-8439-0b67e828a17f"
+              curl "{import.meta.env.VITE_SUPABASE_URL}/functions/v1/inventory-api?userId=e271fcc4-1822-4da8-8439-0b67e828a17f"
             </code>
           </div>
         </CardContent>

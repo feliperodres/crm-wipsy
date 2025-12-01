@@ -129,7 +129,7 @@ export default function OnboardingWhatsApp({ onNext }: OnboardingWhatsAppProps) 
 
     const appId = import.meta.env.VITE_META_APP_ID;
     const configId = import.meta.env.VITE_META_CONFIG_ID;
-    const redirectUri = `https://fczgowziugcvrpgfelks.supabase.co/functions/v1/whatsapp-meta-callback`;
+    const redirectUri = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-meta-callback`;
 
     if (!appId || !configId) {
       toast.error('Error de configuración: Credenciales de Meta no configuradas');
